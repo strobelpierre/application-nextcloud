@@ -53,6 +53,30 @@
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
     <xwiki.issueManagement.jira.id>NEXTCLOUD</xwiki.issueManagement.jira.id>
   </properties>
+  <repositories>
+    <repository>
+      <id>xwiki-public</id>
+      <url>https://nexus.xwiki.org/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>xwiki-public</id>
+      <url>https://nexus.xwiki.org/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
   <modules>
     <module>application-nextcloud-ui</module>
     <module>application-nextcloud-api</module>
