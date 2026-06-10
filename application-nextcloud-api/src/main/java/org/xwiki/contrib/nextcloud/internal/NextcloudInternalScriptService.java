@@ -40,12 +40,14 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.jose.util.Base64URL;
 
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.user.api.XWikiRightService;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.contrib.oidc.provider.internal.store.OIDCStore;
-import org.xwiki.contrib.oidc.provider.internal.store.OIDCConsent;
-import org.xwiki.contrib.oidc.provider.internal.store.XWikiBearerAccessToken;
+import org.xwiki.contrib.oidc.OIDCException;
+import org.xwiki.contrib.oidc.consent.internal.store.OIDCConsentStore;
+import org.xwiki.contrib.oidc.consent.internal.store.BaseObjectOIDCConsent;
+import org.xwiki.contrib.oidc.consent.internal.store.XWikiBearerAccessToken;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
@@ -80,7 +82,7 @@ public class NextcloudInternalScriptService implements ScriptService
     private EntityReferenceSerializer<String> serialiser;
 
     @Inject
-    private OIDCStore store;
+    private OIDCConsentStore store;
 
     @Inject
     @Named("currentmixed")
@@ -116,19 +118,27 @@ public class NextcloudInternalScriptService implements ScriptService
         ClientID clientID = new ClientID(clientId);
         URI redirectURI = new URI(redirectUri);
 
-        OIDCConsent consent = store.getConsent(clientID, redirectURI, userDocumentReference);
+        BaseObjectOIDCConsent consent = store.getConsent(clientID, redirectURI, userDocumentReference);
 
         if (consent == null) {
-            consent = new OIDCConsent(userDocument.getDocument().newXObject(OIDCConsent.REFERENCE, xcontext));
+            BaseObject xobject =
+                userDocument.getDocument().newXObject(BaseObjectOIDCConsent.REFERENCE, xcontext);
+            String id = serialiser.serialize(xobject.getReference());
+            consent = new BaseObjectOIDCConsent(id, xobject, xcontext);
             consent.setClientID(clientID);
             consent.setRedirectURI(redirectURI);
         }
         String consentReference = serialiser.serialize(consent.getReference());
         XWikiBearerAccessToken accessToken = XWikiBearerAccessToken.create(consentReference);
         String random = accessToken.getRandom();
-        consent.setAllowed(true);
-        consent.setAccessToken(random, xcontext);
-        store.saveConsent(consent, "Add OIDC consent for a Nextcloud instance");
+        consent.setEnabled(true);
+        consent.setAccessToken(accessToken);
+        try {
+            store.saveConsent(consent, "Add OIDC consent for a Nextcloud instance");
+        } catch (OIDCException e) {
+            throw new XWikiException(XWikiException.MODULE_XWIKI_STORE,
+                XWikiException.ERROR_XWIKI_UNKNOWN, "Failed to save OIDC consent", e);
+        }
         return consentReference.replace("Object ", "") + "/" + random;
     }
 
