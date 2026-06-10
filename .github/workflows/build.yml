@@ -21,7 +21,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -B -ntp -DskipTests -Denforcer.skip=true package
+        run: mvn -B -ntp -DskipTests -Denforcer.skip=true -Denforcer.fail=false package
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
