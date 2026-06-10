@@ -58,6 +58,10 @@
           <groupId>com.tdunning</groupId>
           <artifactId>json</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.xwiki.platform</groupId>
+          <artifactId>xwiki-platform-office-importer</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -73,6 +77,10 @@
           <groupId>com.tdunning</groupId>
           <artifactId>json</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.xwiki.platform</groupId>
+          <artifactId>xwiki-platform-office-importer</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -87,6 +95,10 @@
         <exclusion>
           <groupId>com.tdunning</groupId>
           <artifactId>json</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.xwiki.platform</groupId>
+          <artifactId>xwiki-platform-office-importer</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
